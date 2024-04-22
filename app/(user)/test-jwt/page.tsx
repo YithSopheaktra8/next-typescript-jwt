@@ -8,8 +8,8 @@ const TestJWTPage = () => {
     const [refreshToken, setRefreshToken] = useState(false);
 
     const handleLogin = async () => {
-        const email = "kdeylester@gmail.com";
-        const password = "kdey@@168";
+        const email = "yithsopheaktra18@gmail.com";
+        const password = "Pheaktra@8899";
         fetch(process.env.NEXT_PUBLIC_BASE_URL_LOCALHOST + "login/", {
             method: "POST",
             headers: {
@@ -29,7 +29,7 @@ const TestJWTPage = () => {
     }
     const handleUpdate = async () => {
         const body = {
-            name: "Product Update By kdeyhenessey"
+            name: "Product Update"
         }
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}products/${507}/`,{
             method: "PATCH",
@@ -65,11 +65,9 @@ const TestJWTPage = () => {
             <button className="my-4 px-10 py-3 bg-blue-600 rounded-xl text-gray-100 text-3xl"
                     onClick={handleLogin}>Login
             </button>
-            {/*refresh token automatically*/}
             <button className="my-4 px-10 py-3 bg-blue-600 rounded-xl text-gray-100 text-3xl"
                     onClick={handleUpdate}>Update
             </button>
-            {/*{refreshToken && <button className="my-4 px-10 py-3 bg-blue-600 rounded-xl text-gray-100 text-3xl">Refresh Token</button>}*/}
         </main>
     )
 }
