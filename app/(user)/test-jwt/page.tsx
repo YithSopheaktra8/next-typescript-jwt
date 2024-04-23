@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useCreateProductMutation } from "@/redux/service/ecommerce";
+import {
+	useCreateProductMutation,
+	useDeleteProductMutation,
+} from "@/redux/service/ecommerce";
 
 type CatageoryType = {
 	name: string;
@@ -25,8 +28,10 @@ const TestJWTPage = () => {
 	const [unAthorized, setUnAuthorized] = useState(false);
 	const [createProduct, { data, error, isLoading, isSuccess }] =
 		useCreateProductMutation();
+	const [deleteProduct, { isLoading: isDeleting }] =
+		useDeleteProductMutation();
 
-	const productBody : ProductPostType = {
+	const productBody: ProductPostType = {
 		name: "Product Create by using RTK",
 		price: 100,
 		desc: "This is product 1 creat by using RTK",
@@ -37,7 +42,7 @@ const TestJWTPage = () => {
 		},
 		image: "https://via.placeholder.com/150",
 	};
-	
+
 	const handleCreateProductWithRTK = async () => {
 		// ==| Inline error handling |==
 		// try {
@@ -52,9 +57,9 @@ const TestJWTPage = () => {
 			newProduct: productBody,
 			accessToken: accessToken ? accessToken : "empty access token",
 		});
-		
 	};
-	if(isSuccess){
+
+	if (isSuccess) {
 		console.log("Product created", data);
 	}
 
@@ -156,6 +161,19 @@ const TestJWTPage = () => {
 				className="my-4 px-10 py-3 bg-blue-600 rounded-xl text-gray-100 text-3xl"
 				onClick={handleUpdate}>
 				Update
+			</button>
+			<button
+				className="my-4 px-10 py-3 bg-blue-600 rounded-xl text-gray-100 text-3xl"
+				onClick={() => {
+					deleteProduct({
+						id: 570,
+						accessToken: accessToken,
+					});
+					if (isDeleting) {
+						console.log("Deleting");
+					}
+				}}>
+				Delete Product
 			</button>
 			{unAthorized && (
 				<button
