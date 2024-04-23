@@ -5,8 +5,25 @@ import { useEffect } from "react";
 import { fetchUserProfile } from "@/redux/features/userProfile/userProfileSlice";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
+import { useGetProductsQuery, useGetProductByIdQuery } from "@/redux/service/ecommerce";
 
 export default function Home() {
+	// const { data, error, isFetching, isLoading } = useGetProductsQuery({
+	// 	page: 1,
+	// 	pageSize: 10,
+	// });
+
+	// console.log(data);
+	// console.log(error);
+	// // console.log(isFetching);
+	// console.log(isLoading);
+
+	const {data} = useGetProductByIdQuery(5);
+	console.log(data);
+
+	
+
+
 	const { data: session } = useSession();
 	console.log(session);
 	const router = useRouter();
@@ -23,14 +40,12 @@ export default function Home() {
 				<p className="text-2xl mb-2">Not Signed In</p>
 				<button
 					className="bg-blue-600 py-2 px-6 rounded-md text-white mb-2"
-					onClick={() => signIn("google")}
-				>
+					onClick={() => signIn("google")}>
 					Sign in with google
 				</button>
 				<button
 					className="bg-none border-gray-300 border py-2 px-6 rounded-md mb-2"
-					onClick={() => signIn("github")}
-				>
+					onClick={() => signIn("github")}>
 					Sign in with github
 				</button>
 			</main>
@@ -48,14 +63,13 @@ export default function Home() {
 				/>
 			</div>
 			<p className="text-2xl mb-2">
-				Welcome <span className="font-bold">{session.user?.name}</span>. Signed
-				In As
+				Welcome <span className="font-bold">{session.user?.name}</span>.
+				Signed In As
 			</p>
 			<p className="font-bold mb-4">{session.user?.email}</p>
 			<button
 				className="bg-red-600 py-2 px-6 rounded-md"
-				onClick={() => signOut()}
-			>
+				onClick={() => signOut()}>
 				Sign out
 			</button>
 		</main>
