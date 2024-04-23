@@ -1,12 +1,62 @@
 "use client";
 
 import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useCreateProductMutation } from "@/redux/service/ecommerce";
+
+type CatageoryType = {
+	name: string;
+	icon: string;
+};
+
+type ProductPostType = {
+	category: CatageoryType;
+	name: string;
+	desc: string;
+	image: string;
+	price: number;
+	quantity: number;
+};
 
 const TestJWTPage = () => {
 	const [accessToken, setAccessToken] = useState("");
 	const [user, setUser] = useState(null);
 	const [refreshToken, setRefreshToken] = useState(false);
 	const [unAthorized, setUnAuthorized] = useState(false);
+	const [createProduct, { data, error, isLoading, isSuccess }] =
+		useCreateProductMutation();
+
+	const productBody : ProductPostType = {
+		name: "Product Create by using RTK",
+		price: 100,
+		desc: "This is product 1 creat by using RTK",
+		quantity: 10,
+		category: {
+			name: "Category 1",
+			icon: "icon1",
+		},
+		image: "https://via.placeholder.com/150",
+	};
+	
+	const handleCreateProductWithRTK = async () => {
+		// ==| Inline error handling |==
+		// try {
+		//  const res = await createProduct(productBody).unwrap();
+		//  console.log(res);
+		// } catch (error) {
+		//  console.log(error);
+		// }
+
+		// ==| Error handling with the useCreateProductMutation hook |==
+		createProduct({
+			newProduct: productBody,
+			accessToken: accessToken ? accessToken : "empty access token",
+		});
+		
+	};
+	if(isSuccess){
+		console.log("Product created", data);
+	}
 
 	const handleLogin = async () => {
 		const email = "yithsopheaktra18@gmail.com";
@@ -21,6 +71,8 @@ const TestJWTPage = () => {
 			.then((res) => res.json())
 			.then((data) => {
 				console.log("Response When Login", data);
+				localStorage.setItem("accessToken", data.accessToken);
+				console.log(data.accessToken);
 				if (data.accessToken) {
 					setAccessToken(data.accessToken);
 					setUser(data.user);
@@ -30,6 +82,7 @@ const TestJWTPage = () => {
 				console.error("Login error:", error);
 			});
 	};
+
 	const handleUpdate = async () => {
 		const body = {
 			name: "Product Update",
@@ -60,6 +113,7 @@ const TestJWTPage = () => {
 		})
 			.then((res) => res.json())
 			.then((data) => {
+				localStorage.setItem("accessToken", data.accessToken);
 				setAccessToken(data.accessToken);
 				console.log("Response When Refresh Token", data);
 			})
@@ -82,7 +136,7 @@ const TestJWTPage = () => {
 				console.error("Refresh Token error:", error);
 			});
 
-			setAccessToken("")
+		setAccessToken("");
 	};
 
 	return (
@@ -95,14 +149,18 @@ const TestJWTPage = () => {
 			</button>
 			<button
 				className="my-4 px-10 py-3 bg-blue-600 rounded-xl text-gray-100 text-3xl"
+				onClick={handleCreateProductWithRTK}>
+				Create Product with RTK
+			</button>
+			<button
+				className="my-4 px-10 py-3 bg-blue-600 rounded-xl text-gray-100 text-3xl"
 				onClick={handleUpdate}>
 				Update
 			</button>
 			{unAthorized && (
 				<button
 					onClick={handleRefreshToken}
-					className="my-4 p-4 bg-blue-600 rounded-xl text-3xl text-gray-100"
-				>
+					className="my-4 p-4 bg-blue-600 rounded-xl text-3xl text-gray-100">
 					Refresh
 				</button>
 			)}

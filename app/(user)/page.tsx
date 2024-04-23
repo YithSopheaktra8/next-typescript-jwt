@@ -5,7 +5,16 @@ import { useEffect } from "react";
 import { fetchUserProfile } from "@/redux/features/userProfile/userProfileSlice";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
-import { useGetProductsQuery, useGetProductByIdQuery } from "@/redux/service/ecommerce";
+import {
+	useGetProductsQuery,
+	useGetProductByIdQuery,
+} from "@/redux/service/ecommerce";
+import { useAppSelector } from "@/redux/hooks";
+import {
+	getAccessToken,
+	selectAccessToken,
+	setAccessToken,
+} from "@/redux/features/token/tokenSlice";
 
 export default function Home() {
 	// const { data, error, isFetching, isLoading } = useGetProductsQuery({
@@ -18,19 +27,26 @@ export default function Home() {
 	// // console.log(isFetching);
 	// console.log(isLoading);
 
-	const {data} = useGetProductByIdQuery(5);
-	console.log(data);
+	// const {data} = useGetProductByIdQuery(5);
+	// console.log(data);
 
-	
-
+	const accessToken = useAppSelector(selectAccessToken);
+	console.log(accessToken);
 
 	const { data: session } = useSession();
-	console.log(session);
+	// console.log(session);
 	const router = useRouter();
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		dispatch(fetchUserProfile());
+	}, []);
+
+	useEffect(() => {
+		const storedToken = localStorage.getItem("accessToken");
+		if (storedToken) {
+			dispatch(setAccessToken(storedToken));
+		}
 	}, []);
 
 	// if user is not signed in
