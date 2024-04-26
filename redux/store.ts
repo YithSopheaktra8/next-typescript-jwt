@@ -2,16 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import counterSlice from "./features/counter/counterSlice";
 import cartSlice from "./features/cart/cartSlice";
 import userProfileSlice from "./features/userProfile/userProfileSlice";
-import { ecommerceApi } from "./service/ecommerce";
-// import {accessToken} from "./service/acessToken"
-import accessToken from "./features/token/tokenSlice"
+import { ecommerceApi } from "./api";
+import accessToken from "./features/token/tokenSlice";
 // create store
 export const makeStore = () => {
 	return configureStore({
 		reducer: {
 			[ecommerceApi.reducerPath]: ecommerceApi.reducer,
-			// [accessToken.reducerPath] : accessToken.reducer,
-			accessToken : accessToken,
+			accessToken: accessToken,
 			counter: counterSlice,
 			cart: cartSlice,
 			userProfile: userProfileSlice,

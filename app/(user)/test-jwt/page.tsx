@@ -5,7 +5,12 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
 	useCreateProductMutation,
 	useDeleteProductMutation,
-} from "@/redux/service/ecommerce";
+	useUpdateProductMutation,
+} from "@/redux/service/product";
+import {
+	setAccessToken,
+	selectAccessToken,
+} from "@/redux/features/token/tokenSlice";
 
 type CatageoryType = {
 	name: string;
@@ -22,14 +27,15 @@ type ProductPostType = {
 };
 
 const TestJWTPage = () => {
-	const [accessToken, setAccessToken] = useState("");
 	const [user, setUser] = useState(null);
-	const [refreshToken, setRefreshToken] = useState(false);
 	const [unAthorized, setUnAuthorized] = useState(false);
-	const [createProduct, { data, error, isLoading, isSuccess }] =
+	const [createProduct, { data }] =
 		useCreateProductMutation();
 	const [deleteProduct, { isLoading: isDeleting }] =
 		useDeleteProductMutation();
+	const accessToken = useAppSelector(selectAccessToken);
+	const dispatch = useAppDispatch();
+	const [updateProduct,{error}] = useUpdateProductMutation();
 
 	const productBody: ProductPostType = {
 		name: "Product Create by using RTK",
@@ -55,37 +61,35 @@ const TestJWTPage = () => {
 		// ==| Error handling with the useCreateProductMutation hook |==
 		createProduct({
 			newProduct: productBody,
-			accessToken: accessToken ? accessToken : "empty access token",
 		});
 	};
 
-	if (isSuccess) {
-		console.log("Product created", data);
-	}
 
 	const handleLogin = async () => {
 		const email = "yithsopheaktra18@gmail.com";
 		const password = "istad123";
-		fetch(process.env.NEXT_PUBLIC_BASE_URL_LOCALHOST + "login/", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ email, password }),
-		})
+		fetch(
+			process.env.NEXT_PUBLIC_BASE_URL_LOCALHOST + "login/",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ email, password }),
+			}
+		)
 			.then((res) => res.json())
 			.then((data) => {
-				console.log("Response When Login", data);
-				localStorage.setItem("accessToken", data.accessToken);
-				console.log(data.accessToken);
+				console.log(data);
 				if (data.accessToken) {
-					setAccessToken(data.accessToken);
+					dispatch(setAccessToken(data.accessToken));
 					setUser(data.user);
 				}
 			})
 			.catch((error) => {
 				console.error("Login error:", error);
 			});
+
 	};
 
 	const handleUpdate = async () => {
@@ -118,8 +122,7 @@ const TestJWTPage = () => {
 		})
 			.then((res) => res.json())
 			.then((data) => {
-				localStorage.setItem("accessToken", data.accessToken);
-				setAccessToken(data.accessToken);
+				dispatch(setAccessToken(data.accessToken));
 				console.log("Response When Refresh Token", data);
 			})
 			.catch((error) => {
@@ -144,6 +147,17 @@ const TestJWTPage = () => {
 		setAccessToken("");
 	};
 
+	// handle update product by id with rtk query
+	const handleUpdateWithRTK = async () => {
+		updateProduct({
+			id: 542,
+			updatedProduct: {
+				name: "casual wardrobe update5",
+			},
+		});
+	};
+
+
 	return (
 		<main className="h-screen grid place-content-center">
 			<h1 className="text-4xl font-bold text-center">Test JWT</h1>
@@ -164,14 +178,15 @@ const TestJWTPage = () => {
 			</button>
 			<button
 				className="my-4 px-10 py-3 bg-blue-600 rounded-xl text-gray-100 text-3xl"
+				onClick={handleUpdateWithRTK}>
+				Update with RTK
+			</button>
+			<button
+				className="my-4 px-10 py-3 bg-blue-600 rounded-xl text-gray-100 text-3xl"
 				onClick={() => {
 					deleteProduct({
 						id: 570,
-						accessToken: accessToken,
 					});
-					if (isDeleting) {
-						console.log("Deleting");
-					}
 				}}>
 				Delete Product
 			</button>
@@ -193,3 +208,5 @@ const TestJWTPage = () => {
 };
 
 export default TestJWTPage;
+
+

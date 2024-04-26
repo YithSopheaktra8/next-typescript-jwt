@@ -8,13 +8,14 @@ import Image from "next/image";
 import {
 	useGetProductsQuery,
 	useGetProductByIdQuery,
-} from "@/redux/service/ecommerce";
+} from "@/redux/service/product";
 import { useAppSelector } from "@/redux/hooks";
 import {
-	getAccessToken,
 	selectAccessToken,
 	setAccessToken,
 } from "@/redux/features/token/tokenSlice";
+import { RootState } from "@/redux/store";
+import { Root } from "postcss";
 
 export default function Home() {
 	// const { data, error, isFetching, isLoading } = useGetProductsQuery({
@@ -29,25 +30,11 @@ export default function Home() {
 
 	// const {data} = useGetProductByIdQuery(5);
 	// console.log(data);
-
-	const accessToken = useAppSelector(selectAccessToken);
-	console.log(accessToken);
+	const state = useAppSelector((state) => state.accessToken.token);
+	console.log("Global State: ", state);
 
 	const { data: session } = useSession();
 	// console.log(session);
-	const router = useRouter();
-	const dispatch = useAppDispatch();
-
-	useEffect(() => {
-		dispatch(fetchUserProfile());
-	}, []);
-
-	useEffect(() => {
-		const storedToken = localStorage.getItem("accessToken");
-		if (storedToken) {
-			dispatch(setAccessToken(storedToken));
-		}
-	}, []);
 
 	// if user is not signed in
 	if (!session) {

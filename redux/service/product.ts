@@ -1,10 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { ecommerceApi } from "../api";
 
-// Define a service using a base URL and expected endpoints
-export const ecommerceApi = createApi({
-	reducerPath: "ecommerceApi", // The name of the slice of state that will be managed by this api
-	baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_DJANGO_API_URL }),
+// Define a service using a base URL from the "ecommerceApi" and injects endpoints to it
+export const productApi = ecommerceApi.injectEndpoints({
 	endpoints: (builder) => ({
+		// The rest of the endpoints
 		// get all products
 		//                        <result type,         args type>
 		getProducts: builder.query<any, { page: number; pageSize: number }>({
@@ -19,15 +18,11 @@ export const ecommerceApi = createApi({
 		// create a product
 		createProduct: builder.mutation<
 			any,
-			{ newProduct: object; accessToken: string }
+			{ newProduct: object}
 		>({
-			query: ({ newProduct, accessToken }) => ({
+			query: ({ newProduct }) => ({
 				url: "/api/products/",
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${accessToken}`,
-				},
 				body: newProduct,
 			}),
 		}),
@@ -35,15 +30,11 @@ export const ecommerceApi = createApi({
 		// update a product
 		updateProduct: builder.mutation<
 			any,
-			{ id: number; updatedProduct: object; accessToken: string }
+			{ id: number; updatedProduct: object }
 		>({
-			query: ({ id, updatedProduct, accessToken }) => ({
+			query: ({ id, updatedProduct}) => ({
 				url: `/api/products/${id}/`,
 				method: "PATCH",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${accessToken}`,
-				},
 				body: updatedProduct,
 			}),
 		}),
@@ -51,19 +42,17 @@ export const ecommerceApi = createApi({
 		// delete a product
 		deleteProduct: builder.mutation<
 			any,
-			{ id: number; accessToken: string }
+			{ id: number}
 		>({
-			query: ({ id, accessToken }) => ({
+			query: ({ id }) => ({
 				url: `/api/products/${id}/`,
 				method: "DELETE",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${accessToken}`,
-				},
 			}),
 		}),
 	}),
+	overrideExisting: false, // don't override existing hooks
 });
+// Export hooks for usage in components, which are
 
 // Export hooks for usage in components, which are
 export const {
@@ -72,4 +61,4 @@ export const {
 	useCreateProductMutation,
 	useUpdateProductMutation,
 	useDeleteProductMutation,
-} = ecommerceApi;
+} = productApi;
